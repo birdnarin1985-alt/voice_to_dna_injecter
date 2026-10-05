@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Chiangmai 63 Karnchang - Voice Mantra Bill Injector</title>
+    <style>
+        body {
+            background: #0d1117;
+            color: #00ff66;
+            font-family: monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 24px rgba(0, 255, 102, 0.15);
+            transform: translateZ(0);
+        }
+
+        h2 {
+            text-align: center;
+            color: #58a6ff;
+            text-shadow: 0 0 10px rgba(88, 166, 255, 0.4);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: #8b949e;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #c9d1d9;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #00ff66;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .dna-btn {
+            width: 100%;
+            background: #238636;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transform: translateZ(0);
+            will-change: transform;
+            transition: transform 0.08s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.1s ease;
+        }
+
+        .dna-btn:active {
+            transform: scale(0.97) translateZ(0);
+            background: #2ea043;
+        }
+
+        .voice-btn {
+            background: #1f6feb;
+        }
+        .voice-btn:active {
+            background: #388bfd;
+        }
+
+        .invoice-preview {
+            margin-top: 20px;
+            background: #0d1117;
+            border: 1px dashed #00ff66;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .mantra-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #d29922;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>ห้างหุ้นส่วนจำกัด เชียงใหม่ 63 การช่าง</h2>
+        <div class="subtitle">ระบบ Voice Mantra & DNA Bill Injector</div>
+
+        <!-- ฟอร์มเลือกวิญญาณลูกค้า -->
+        <div class="form-group">
+            <label for="client-select">เลือกวิญญาณลูกค้า (Client Soul Pointer):</label>
+            <select id="client-select" onchange="handleClientSelection(this.value)"></select>
+        </div>
+
+        <div class="form-group">
+            <label for="project-input">รายการงานก่อสร้าง / บริการ:</label>
+            <input type="text" id="project-input" value="งานระบบระบายน้ำและถนนโครงการ 2-0-64">
+        </div>
+
+        <!-- ปุ่มสั่งงานด้วยเสียง (Voice Mantra Dictation) -->
+        <button class="dna-btn voice-btn" onclick="startVoiceMantra()">🎙️ เปล่งเสียงคาถา (Voice-to-DNA Inject)</button>
+
+        <!-- ปุ่มออกใบวางบิลปกติ -->
+        <button class="dna-btn" onclick="generateInvoice()">✨ ออกใบวางบิล & คาถาเงินล้าน</button>
+
+        <!-- พื้นแสดงผลเอกสาร -->
+        <div id="invoice-output" class="invoice-preview">
+            [กดปุ่มไมค์เพื่อสั่งด้วยเสียง หรือเลือกข้อมูลแล้วออกใบวางบิล]
+        </div>
+
+        <div id="mantra-display" class="mantra-footer">มหาลาโภ ภวันตุ เม...</div>
+    </div>
+
+    <script>
+        // 1. คลังสมบัติ DNA Dictionary (ฐานข้อมูลวิญญาณลูกค้า)
+        const SOUL_DATABASE = {
+            "client_01": { name: "โครงการพัฒนาโครงสร้างพื้นฐานเชียงใหม่", address: "ถ.สุเทพ อ.เมือง จ.เชียงใหม่", project: "งานวางท่อระบายน้ำ", amount: "176,000 THB" },
+            "client_02": { name: "คุณนarin (สนามทดสอบล้อ F22 Pro)", address: "วงแหวนรอบสอง เชียงใหม่", project: "ระบบโทรมาตรและโครงข่ายพอยเตอร์", amount: "63,000 THB" },
+            "client_03": { name: "หจก. ภาคเหนือการโยธา", address: "อำเภอแม่ริม เชียงใหม่", project: "ซ่อมบำรุงผิวจราจร", amount: "250,000 THB" }
+        };
+
+        const MANTRA_DNA = {
+            core: "มหาลาโภ ภวันตุ เม — คล่องตัว สำเร็จ ไหลลื่น ไร้รอยต่อ",
+            success_log: "-> พอยเตอร์ชี้สำเร็จ: บันทึกข้อมูลและออกใบวางบิลเรียบร้อย 120 FPS!"
+        };
+
+        // 2. DNA Injector ตั้งต้น
+        function injectDNA() {
+            const select = document.getElementById('client-select');
+            for (const [key, client] of Object.entries(SOUL_DATABASE)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.innerText = `${client.name} (${client.amount})`;
+                select.appendChild(option);
+            }
+            handleClientSelection("client_01");
+        }
+
+        function handleClientSelection(clientKey) {
+            const client = SOUL_DATABASE[clientKey];
+            document.getElementById('project-input').value = client.project + " (" + client.address + ")";
+        }
+
+        // 3. ฟีเจอร์ Voice Mantra Dictation (Web Speech API Mapping)
+        function startVoiceMantra() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("เบราว์เซอร์นี้ยังไม่รองรับระบบเสียงพูด (Voice Mantra)");
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'th-TH'; // ตั้งค่าภาษาไทย
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            document.getElementById('invoice-output').innerHTML = "🎙️ กำลังฟังเสียงคาถา... (โปรดพูดชื่องานหรือรายละเอียด)";
+
+            recognition.onresult = (event) => {
+                const speechResult = event.results[0][0].transcript;
+                document.getElementById('project-input').value = "เสียงคาถา: " + speechResult;
+                document.getElementById('invoice-output').innerHTML = `✨ ถอดรหัสเสียงสำเร็จ: "<strong>${speechResult}</strong>" ฉีดเข้า DNA เรียบร้อย!`;
+                
+                if (navigator.vibrate) navigator.vibrate(40);
+            };
+
+            recognition.onerror = (event) => {
+                document.getElementById('invoice-output').innerHTML = "❌ เกิดข้อผิดพลาดในการรับเสียงคาถา ลองใหม่อีกครั้ง";
+            };
+
+            recognition.start();
+        }
+
+        // 4. ออกใบวางบิลผ่าน Event-Driven พอยเตอร์
+        function generateInvoice() {
+            const clientKey = document.getElementById('client-select').value;
+            const client = SOUL_DATABASE[clientKey];
+            const workDetail = document.getElementById('project-input').value;
+
+            const outputHtml = `
+                <strong>📜 ใบวางบิล / INVOICE (Voice Mantra Mode)</strong><br>
+                ----------------------------------------<br>
+                <strong>กิจการ:</strong> หจก. เชียงใหม่ 63 การช่าง<br>
+                <strong>ลูกค้า:</strong> ${client.name}<br>
+                <strong>ที่อยู่:</strong> ${client.address}<br>
+                <strong>รายละเอียด:</strong> ${workDetail}<br>
+                <strong>ยอดรวมสุทธิ:</strong> <span style="color: #ff7b72; font-weight: bold;">${client.amount}</span><br>
+                ----------------------------------------<br>
+                <em>สถานะ: ${MANTRA_DNA.success_log}</em>
+            `;
+
+            document.getElementById('invoice-output').innerHTML = outputHtml;
+            document.getElementById('mantra-display').innerText = MANTRA_DNA.core;
+
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        window.onload = injectDNA;
+    </script>
+</body>
+</html>
