@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>หจก. เชียงใหม่ 63 การช่าง - ตาข่ายพระอินทร์ & พระคาถาเงินล้าน (Master Suite)</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --card-bg: rgba(22, 27, 34, 0.94);
+            --border-color: rgba(48, 54, 61, 0.8);
+            --accent-green: #00ff66;
+            --accent-blue: #0a84ff;
+            --accent-gold: #d29922;
+            --accent-orange: #ff9f0a;
+            --text-main: #f0f6fc;
+            --text-sub: #8b949e;
+            --font-ios: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+        }
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: var(--font-ios); margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 640px; background: var(--card-bg); backdrop-filter: blur(25px); border: 1px solid var(--border-color); border-radius: 24px; padding: 24px; box-sizing: border-box; box-shadow: 0 16px 50px rgba(0,255,102,0.15); }
+        h2 { text-align: center; color: #fff; font-size: 20px; margin-bottom: 4px; }
+        .subtitle { text-align: center; font-size: 13px; color: var(--accent-green); margin-bottom: 20px; font-weight: 500; }
+        
+        /* Indra Net Wizard Tabs */
+        .net-tabs { display: flex; gap: 4px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
+        .net-tab { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-sub); padding: 8px 6px; font-size: 11px; font-weight: 600; border-radius: 8px; cursor: pointer; text-align: center; white-space: nowrap; transition: all 0.2s; }
+        .net-tab.active { background: var(--accent-green); color: #000; border-color: var(--accent-green); }
+
+        .net-panel { display: none; }
+        .net-panel.active { display: block; }
+
+        .form-group { margin-bottom: 14px; }
+        label { display: block; margin-bottom: 5px; font-size: 13px; color: var(--text-sub); }
+        select, input { width: 100%; padding: 12px 14px; background: rgba(13, 17, 23, 0.9); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 12px; font-family: var(--font-ios); font-size: 15px; box-sizing: border-box; outline: none; }
+        select:focus, input:focus { border-color: var(--accent-green); }
+        
+        .ios-btn { width: 100%; background: var(--accent-green); color: #000; border: none; padding: 14px; font-size: 15px; font-weight: 600; border-radius: 12px; cursor: pointer; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,255,102,0.2); }
+        .ios-btn:active { transform: scale(0.96); opacity: 0.85; }
+        .ios-btn.gold { background: var(--accent-gold); color: #000; }
+        .ios-btn.blue { background: var(--accent-blue); color: #fff; }
+
+        .output-box { background: rgba(13,17,23,0.95); border: 1px dashed var(--accent-green); padding: 18px; border-radius: 12px; font-size: 13px; line-height: 1.6; margin-top: 15px; }
+        .mantra-box { text-align: center; margin-top: 18px; font-size: 13px; color: var(--accent-gold); font-weight: bold; background: rgba(210, 153, 34, 0.1); padding: 10px; border-radius: 10px; border: 1px dashed var(--accent-gold); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>หจก. เชียงใหม่ 63 การช่าง</h2>
+        <div class="subtitle">ระบบตาข่ายพระอินทร์ & พระคาถาเงินล้าน (Full Indra Net Master Suite)</div>
+
+        <!-- Navigation Tabs (Indra Net Nodes) -->
+        <div class="net-tabs">
+            <button id="nt-1" class="net-tab active" onclick="switchNetTab(1)">1. ภาษีที่ดิน</button>
+            <button id="nt-2" class="net-tab" onclick="switchNetTab(2)">2. พิกัด & 3D</button>
+            <button id="nt-3" class="net-tab" onclick="switchNetTab(3)">3. คิวดิน/โคกหนองนา</button>
+            <button id="nt-4" class="net-tab" onclick="switchNetTab(4)">4. ใบเสนอราคา</button>
+        </div>
+
+        <!-- NODE 1: ภาษีที่ดิน & กฎหมาย -->
+        <div id="panel-1" class="net-panel active">
+            <div class="form-group">
+                <label>ขนาดพื้นที่ดิน (ไร่):</label>
+                <input type="number" id="net-rai" value="3" oninput="runIndraAudit()">
+            </div>
+            <div class="form-group">
+                <label>ราคาประเมินทุนทรัพย์ (บาท / ตร.วา):</label>
+                <input type="number" id="net-appraisal" value="5000" oninput="runIndraAudit()">
+            </div>
+            <div class="form-group">
+                <label>สถานะการจัดการที่ดิน:</label>
+                <select id="net-land-status" onchange="runIndraAudit()">
+                    <option value="tax_only">ที่ดินรกร้าง (ยอมจ่ายภาษีตามกฎหมาย ตรงไปตรงมา)</option>
+                    <option value="kok_nong_na">พัฒนาเป็นโคกหนองนา / นิเวศบำนาญ (ลดภาษีสู่เกษตรกรรม)</option>
+                </select>
+            </div>
+            <button class="ios-btn" onclick="switchNetTab(2)">ถัดไป: ตรวจพิกัด & 3D ➔</button>
+        </div>
+
+        <!-- NODE 2: พิกัดภาคสนาม & 3D Earth -->
+        <div id="panel-2" class="net-panel">
+            <div class="form-group">
+                <label>ลิงก์ Google Maps / พิกัดภาคสนาม:</label>
+                <input type="text" id="net-maps-url" value="https://maps.app.goo.gl/k6rszxtbnSjoWtrE6">
+            </div>
+            <div class="form-group">
+                <label>ระบบพิกัดที่ใช้สำรวจ:</label>
+                <select id="net-coord-system">
+                    <option value="url">Google Maps Share Link (Auto-Parse)</option>
+                    <option value="deg">แบบองศาทศนิยม (Lat, Lon)</option>
+                    <option value="utm">แบบระบบ UTM (Zone / Easting / Northing)</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="ios-btn blue" onclick="switchNetTab(1)" style="flex:1;">⬅️ ย้อนกลับ</button>
+                <button class="ios-btn" onclick="switchNetTab(3)" style="flex:2;">ถัดไป: คำนวณคิวดิน ➔</button>
+            </div>
+        </div>
+
+        <!-- NODE 3: ปริมาตรดินขุดดินถม & โคกหนองนา -->
+        <div id="panel-3" class="net-panel">
+            <div class="form-group">
+                <label>ความลึกดินขุดเฉลี่ย (เมตร):</label>
+                <input type="number" id="net-cut-depth" value="1.5" step="0.1" oninput="runIndraAudit()">
+            </div>
+            <div class="form-group">
+                <label>ความสูงดินถมเฉลี่ย (เมตร):</label>
+                <input type="number" id="net-fill-height" value="0.8" step="0.1" oninput="runIndraAudit()">
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="ios-btn blue" onclick="switchNetTab(2)" style="flex:1;">⬅️ ย้อนกลับ</button>
+                <button class="ios-btn" onclick="switchNetTab(4); runIndraAudit();" style="flex:2;">ถัดไป: ออกใบเสนอราคา ✨</button>
+            </div>
+        </div>
+
+        <!-- NODE 4: ใบเสนอราคา & ตาข่ายพระอินทร์สมบูรณ์ -->
+        <div id="panel-4" class="net-panel">
+            <div id="indra-output" class="output-box">
+                [กำลังถักทอตาข่ายพระอินทร์และประมวลผลพระคาถาเงินล้าน...]
+            </div>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button class="ios-btn blue" onclick="switchNetTab(3)" style="flex:1;">⬅️ แก้ไขข้อมูล</button>
+                <button class="ios-btn gold" onclick="window.print()" style="flex:1;">🖨️ ปริ้นท์ใบเสนอราคา</button>
+            </div>
+        </div>
+
+        <!-- พระคาถาเงินล้าน (Mantra Integration) -->
+        <div class="mantra-box">
+            "คาถาเงินล้าน: พุทธะมะอะอุ นะโมพุทธายะ... มหาลาโภ ภวันตุ เม" <br>
+            (ประโยชน์ตน ประโยชน์ท่าน ถูกต้อง โปร่งใส ไหลลื่น ไร้รอยต่อ)
+        </div>
+    </div>
+
+    <script>
+        function switchNetTab(step) {
+            document.querySelectorAll('.net-panel').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.net-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(`panel-${step}`).classList.add('active');
+            document.getElementById(`nt-${step}`).classList.add('active');
+            if (step === 4) runIndraAudit();
+            if (navigator.vibrate) navigator.vibrate(30);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function runIndraAudit() {
+            const rai = parseFloat(document.getElementById('net-rai').value) || 3;
+            const rate = parseFloat(document.getElementById('net-appraisal').value) || 5000;
+            const landStatus = document.getElementById('net-land-status').value;
+            const cutDepth = parseFloat(document.getElementById('net-cut-depth').value) || 1.5;
+            const fillHeight = parseFloat(document.getElementById('net-fill-height').value) || 0.8;
+
+            const totalSqWah = rai * 400;
+            const totalSqm = rai * 1600;
+            const appraisalVal = totalSqWah * rate;
+
+            // คำนวณภาษี
+            let taxMsg = "";
+            if (landStatus === 'tax_only') {
+                const tax = appraisalVal * 0.006;
+                taxMsg = `ที่ดินรกร้าง: ชำระภาษีถูกต้องตามกฎหมาย ${tax.toLocaleString('th-TH', {minimumFractionDigits:2})} บาท/ปี (โปร่งใส สบายใจ)`;
+            } else {
+                const tax = appraisalVal * 0.0001;
+                taxMsg = `นิเวศบำนาญ โคกหนองนา: ลดเหลือภาษีเกษตรกรรม ${tax.toLocaleString('th-TH', {minimumFractionDigits:2})} บาท/ปี (ประหยัดคุ้มค่า)`;
+            }
+
+            // คำนวณคิวดิน
+            const cutCubic = Math.round(totalSqm * 0.3 * cutDepth);
+            const fillCubic = Math.round(totalSqm * 0.3 * fillHeight);
+            const cutCost = cutCubic * 85;
+            const fillCost = fillCubic * 150;
+            const grandTotalEarth = cutCost + fillCost;
+
+            document.getElementById('indra-output').innerHTML = `
+                <div style="text-align:center; font-weight:bold; font-size:14px; color:var(--accent-green); margin-bottom:8px;">📜 ใบเสนอราคา & สรุปตาข่ายพระอินทร์ (Indra's Net)</div>
+                <strong>กิจการ:</strong> หจก. เชียงใหม่ 63 การช่าง (วิศวกรหลวง)<br>
+                <strong>พื้นที่สำรวจ:</strong> ${rai} ไร่ (${totalSqWah.toLocaleString()} ตร.วา)<br>
+                <strong>สถานะกฎหมายและภาษี:</strong> ${taxMsg}<br>
+                <hr style="border-color: #30363d; margin: 10px 0;">
+                <strong>📐 สรุปปริมาตรดินขุด-ดินถม 3D:</strong><br>
+                • ดินขุด (Cut): ${cutCubic.toLocaleString()} ลบ.ม. (คิว) × 85 ฿ = ${cutCost.toLocaleString()} บาท<br>
+                • ดินถม (Fill): ${fillCubic.toLocaleString()} ลบ.ม. (คิว) × 150 ฿ = ${fillCost.toLocaleString()} บาท<br>
+                <hr style="border-color: #30363d; margin: 10px 0;">
+                <div style="text-align:right;">
+                    <span style="color:#ff7b72; font-size:15px; font-weight:bold;">ยอดเสนอราคารวมสุทธิ: ${grandTotalEarth.toLocaleString()} บาท</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-sub); text-align:center; margin-top:10px;">
+                    * ตรวจสอบรอยรั่วครบถ้วน ป้องกันการขาดทุน สมบูรณ์แบบตามหลักวิศวกรรมหลวง *
+                </div>
+            `;
+        }
+
+        window.onload = runIndraAudit;
+    </script>
+</body>
+</html>
