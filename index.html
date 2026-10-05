@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Chiangmai 63 Karnchang - Soul Snapshot Bill Injector</title>
+    <style>
+        body {
+            background: #0d1117;
+            color: #00ff66;
+            font-family: monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 24px rgba(0, 255, 102, 0.15);
+            transform: translateZ(0);
+        }
+
+        h2 {
+            text-align: center;
+            color: #58a6ff;
+            text-shadow: 0 0 10px rgba(88, 166, 255, 0.4);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: #8b949e;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #c9d1d9;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #00ff66;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .dna-btn {
+            width: 100%;
+            background: #238636;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transform: translateZ(0);
+            will-change: transform;
+            transition: transform 0.08s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.1s ease;
+        }
+
+        .dna-btn:active {
+            transform: scale(0.97) translateZ(0);
+            background: #2ea043;
+        }
+
+        .camera-btn {
+            background: #8957e5;
+        }
+        .camera-btn:active {
+            background: #a371f7;
+        }
+
+        /* ช่องพรีวิวกล้องและภาพถ่ายวิญญาณ */
+        .camera-view {
+            width: 100%;
+            height: 220px;
+            background: #000;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            margin-top: 10px;
+            object-fit: cover;
+            display: none;
+        }
+
+        video {
+            width: 100%;
+            height: 220px;
+            background: #000;
+            border-radius: 8px;
+            object-fit: cover;
+            display: none;
+        }
+
+        .invoice-preview {
+            margin-top: 20px;
+            background: #0d1117;
+            border: 1px dashed #00ff66;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .mantra-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #d29922;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>ห้างหุ้นส่วนจำกัด เชียงใหม่ 63 การช่าง</h2>
+        <div class="subtitle">ระบบบันทึกภาพวิญญาณหน้างาน (Soul Snapshot & Bill Injector)</div>
+
+        <!-- ฟอร์มเลือกวิญญาณลูกค้า -->
+        <div class="form-group">
+            <label for="client-select">เลือกวิญญาณลูกค้า (Client Soul Pointer):</label>
+            <select id="client-select" onchange="handleClientSelection(this.value)"></select>
+        </div>
+
+        <div class="form-group">
+            <label for="project-input">รายการงานก่อสร้าง / บริการ:</label>
+            <input type="text" id="project-input" value="งานระบบระบายน้ำและถนนโครงการ 2-0-64">
+        </div>
+
+        <!-- ส่วนควบคุมกล้องฮาร์ดแวร์ (Camera Pointer) -->
+        <button class="dna-btn camera-btn" onclick="toggleCamera()">📷 เปิดกล้องส่องวิญญาณหน้างาน</button>
+        
+        <video id="camera-stream" autoplay playsinline></video>
+        <button id="capture-btn" class="dna-btn" style="background:#da3633; display:none;" onclick="captureSoulSnapshot()">📸 แชะ! บันทึกภาพวิญญาณ</button>
+        
+        <canvas id="snapshot-canvas" style="display:none;"></canvas>
+        <img id="snapshot-preview" class="camera-view" alt="ภาพวิญญาณหน้างาน">
+
+        <!-- ปุ่มออกใบวางบิลปกติ -->
+        <button class="dna-btn" onclick="generateInvoice()">✨ ออกใบวางบิล & คาถาเงินล้าน</button>
+
+        <!-- พื้นแสดงผลเอกสาร -->
+        <div id="invoice-output" class="invoice-preview">
+            [เปิดกล้องถ่ายภาพหน้างาน แล้วกดออกใบวางบิลเพื่อบันทึกประวัติ]
+        </div>
+
+        <div id="mantra-display" class="mantra-footer">มหาลาโภ ภวันตุ เม...</div>
+    </div>
+
+    <script>
+        // 1. คลังสมบัติ DNA Dictionary (ฐานข้อมูลวิญญาณลูกค้า)
+        const SOUL_DATABASE = {
+            "client_01": { name: "โครงการพัฒนาโครงสร้างพื้นฐานเชียงใหม่", address: "ถ.สุเทพ อ.เมือง จ.เชียงใหม่", project: "งานวางท่อระบายน้ำ", amount: "176,000 THB" },
+            "client_02": { name: "คุณนarin (สนามทดสอบล้อ F22 Pro)", address: "วงแหวนรอบสอง เชียงใหม่", project: "ระบบโทรมาตรและโครงข่ายพอยเตอร์", amount: "63,000 THB" },
+            "client_03": { name: "หจก. ภาคเหนือการโยธา", address: "อำเภอแม่ริม เชียงใหม่", project: "ซ่อมบำรุงผิวจราจร", amount: "250,000 THB" }
+        };
+
+        const MANTRA_DNA = {
+            core: "มหาลาโภ ภวันตุ เม — คล่องตัว สำเร็จ ไหลลื่น ไร้รอยต่อ",
+            success_log: "-> พอยเตอร์ชี้สำเร็จ: บันทึกภาพวิญญาณและออกใบวางบิลเรียบร้อย 120 FPS!"
+        };
+
+        let mediaStream = null;
+        let capturedImageData = null;
+
+        // 2. DNA Injector ตั้งต้น
+        function injectDNA() {
+            const select = document.getElementById('client-select');
+            for (const [key, client] of Object.entries(SOUL_DATABASE)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.innerText = `${client.name} (${client.amount})`;
+                select.appendChild(option);
+            }
+            handleClientSelection("client_01");
+        }
+
+        function handleClientSelection(clientKey) {
+            const client = SOUL_DATABASE[clientKey];
+            document.getElementById('project-input').value = client.project + " (" + client.address + ")";
+        }
+
+        // 3. Indra's Net Pointer ควบคุมกล้อง (Camera Hardware Endpoint)
+        async function toggleCamera() {
+            const video = document.getElementById('camera-stream');
+            const captureBtn = document.getElementById('capture-btn');
+
+            if (!mediaStream) {
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+                    video.srcObject = mediaStream;
+                    video.style.display = 'block';
+                    captureBtn.style.display = 'block';
+                    if (navigator.vibrate) navigator.vibrate(40);
+                } catch (err) {
+                    alert("ไม่สามารถเข้าถึงอายตนะกล้องได้: " + err.message);
+                }
+            } else {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+                video.style.display = 'none';
+                captureBtn.style.display = 'none';
+            }
+        }
+
+        // 4. บันทึกภาพวิญญาณหน้างาน (Soul Snapshot Capture)
+        function captureSoulSnapshot() {
+            const video = document.getElementById('camera-stream');
+            const canvas = document.getElementById('snapshot-canvas');
+            const preview = document.getElementById('snapshot-preview');
+
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            capturedImageData = canvas.toDataURL('image/png');
+            preview.src = capturedImageData;
+            preview.style.display = 'block';
+
+            // ปิดกล้องหลังถ่ายเสร็จเพื่อประหยัดพลังงาน
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+                video.style.display = 'none';
+                document.getElementById('capture-btn').style.display = 'none';
+            }
+
+            if (navigator.vibrate) navigator.vibrate(60);
+        }
+
+        // 5. ออกใบวางบิลพร้อมแนบภาพวิญญาณผ่าน Event-Driven พอยเตอร์
+        function generateInvoice() {
+            const clientKey = document.getElementById('client-select').value;
+            const client = SOUL_DATABASE[clientKey];
+            const workDetail = document.getElementById('project-input').value;
+
+            let imageHtml = capturedImageData ? `<br><img src="${capturedImageData}" style="width:100%; max-height:150px; border-radius:6px; margin-top:10px; object-fit:cover;" alt="Soul Snapshot"><br>` : `<br><em>[ยังไม่ได้ถ่ายภาพวิญญาณหน้างาน]</em><br>`;
+
+            const outputHtml = `
+                <strong>📜 ใบวางบิล / INVOICE (Soul Snapshot Mode)</strong><br>
+                ----------------------------------------<br>
+                <strong>กิจการ:</strong> หจก. เชียงใหม่ 63 การช่าง<br>
+                <strong>ลูกค้า:</strong> ${client.name}<br>
+                <strong>ที่อยู่:</strong> ${client.address}<br>
+                <strong>รายละเอียด:</strong> ${workDetail}<br>
+                <strong>ยอดรวมสุทธิ:</strong> <span style="color: #ff7b72; font-weight: bold;">${client.amount}</span><br>
+                <strong>หลักฐานหน้างาน:</strong> ${imageHtml}
+                ----------------------------------------<br>
+                <em>สถานะ: ${MANTRA_DNA.success_log}</em>
+            `;
+
+            document.getElementById('invoice-output').innerHTML = outputHtml;
+            document.getElementById('mantra-display').innerText = MANTRA_DNA.core;
+
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        window.onload = injectDNA;
+    </script>
+</body>
+</html>
